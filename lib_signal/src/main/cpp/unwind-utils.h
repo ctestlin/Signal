@@ -2,6 +2,8 @@
 // Created by pika on 2022/7/5.
 //
 
+#include <string>
+
 #ifndef SIGNAL_UNWIND_UTILS_H
 #define SIGNAL_UNWIND_UTILS_H
 

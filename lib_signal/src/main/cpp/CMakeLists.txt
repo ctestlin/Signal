@@ -21,9 +21,9 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        signal_init.c
-        signal_action.c
-        signal_exception.c
+        signal_init.cpp
+        signal_action.cpp
+        signal_exception.cpp
         unwind-utils.cpp)
 
 
@@ -60,3 +60,7 @@ target_link_libraries( # Specifies the target library.
 #        # included in the NDK.
 #        ${utils})
 
+set_source_files_properties(
+        signal_init.cpp
+        signal_exception.cpp
+        PROPERTIES COMPILE_FLAGS -std=c++11)

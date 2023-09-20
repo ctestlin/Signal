@@ -37,11 +37,13 @@ void dumpBacktrace(std::ostream &os, void **buffer, size_t count) {
     for (size_t idx = 0; idx < count; ++idx) {
         const void *addr = buffer[idx];
         const char *symbol = "";
+        const char *symbol_so = "";
         Dl_info info;
         if (dladdr(addr, &info) && info.dli_sname) {
             symbol = info.dli_sname;
+            symbol_so = info.dli_fname;
         }
-        os << "  #" << std::setw(2) << idx << ": " << addr << "  " << symbol << "\n";
+        os << "  #" << std::setw(2) << idx << ": " << addr << "  " << symbol << " "<< symbol_so <<"\n";
     }
 }
 

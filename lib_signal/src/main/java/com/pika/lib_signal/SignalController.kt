@@ -34,6 +34,7 @@ object SignalController {
     @JvmStatic
     fun callNativeException(signal: Int, nativeStackTrace: String) {
         Log.i(TAG, "callNativeException $signal")
+        Log.i(TAG, "nativeStackTrace $nativeStackTrace")
         //Log.i(TAG, getStacktraceForMainThread())
 
         // 处理anr的场景

@@ -14,10 +14,11 @@
 void init_with_signal(JNIEnv *env, jclass klass,
                       jintArray signals,void (*handler)(int, struct siginfo *, void *)) {
     // 注意释放内存
-    jint *signalsFromJava = (*env)->GetIntArrayElements(env, signals, 0);
-    int size = (*env)->GetArrayLength(env, signals);
+    jint *signalsFromJava = (*env).GetIntArrayElements(signals, 0);
+    int size = (*env).GetArrayLength(signals);
     int needMask = 0;
 
+    // 是否需要监听SIGQUIT SIGQUIT默认是zygote是被屏蔽的 ANR的时候会发这个信号，所以我们需要监控这个的时候 会个标记
     for (int i = 0; i < size; i++) {
         if (signalsFromJava[i] == SIGQUIT) {
             needMask = 1;
@@ -40,6 +41,7 @@ void init_with_signal(JNIEnv *env, jclass klass,
             break;
         }
 
+        // 当时需要监听SIGQUIT信号的时候，即ANR，需要开启监听
         if (needMask) {
             sigemptyset(&mask);
             sigaddset(&mask, SIGQUIT);
@@ -62,8 +64,7 @@ void init_with_signal(JNIEnv *env, jclass klass,
             // 指定SIGKILL和SIGSTOP以外的所有信号
             int flag = sigaction(signalsFromJava[i], &sigc, NULL);
             if (flag == -1) {
-                __android_log_print(ANDROID_LOG_INFO, TAG, "register fail ===== signals[%d] ",
-                                    i);
+                __android_log_print(ANDROID_LOG_INFO, TAG, "register fail ===== signals[%d] ", i);
                 handle_exception(env);
                 // 失败后需要恢复原样
                 if (needMask) {
@@ -75,6 +76,6 @@ void init_with_signal(JNIEnv *env, jclass klass,
 
 
     } while (0);
-    (*env)->ReleaseIntArrayElements(env, signals, signalsFromJava, 0);
+    (*env).ReleaseIntArrayElements(signals, signalsFromJava, 0);
 
 }
