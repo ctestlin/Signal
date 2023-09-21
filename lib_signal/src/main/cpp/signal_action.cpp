@@ -41,7 +41,7 @@ void init_with_signal(JNIEnv *env, jclass klass,
             break;
         }
 
-        // 当时需要监听SIGQUIT信号的时候，即ANR，需要开启监听
+        // 当时需要监听SIGQUIT信号的时候，即ANR，需要开启监听，SIGQUIT的信号默认这个是关掉的
         if (needMask) {
             sigemptyset(&mask);
             sigaddset(&mask, SIGQUIT);
