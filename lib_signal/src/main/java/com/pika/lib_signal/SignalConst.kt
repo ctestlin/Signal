@@ -45,6 +45,7 @@ class SignalConst {
         const val SIGTRAP = 5
         const val SIGABRT = 6
         const val SIGBUS = 7
+        const val SIGFPE = 8
         const val SIGSEGV = 11
     }
 }

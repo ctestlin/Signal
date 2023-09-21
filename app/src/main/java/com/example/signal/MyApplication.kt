@@ -10,6 +10,10 @@ class MyApplication : Application() {
         SignalController.initSignal(intArrayOf(
             SignalConst.SIGQUIT,
             SignalConst.SIGABRT,
-            SignalConst.SIGSEGV),this,MyHandler())
+            SignalConst.SIGSEGV,
+            SignalConst.SIGFPE,
+            SignalConst.SIGILL,
+            SignalConst.SIGBUS
+        ),this,MyHandler())
     }
 }
