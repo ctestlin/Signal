@@ -28,7 +28,7 @@ void init_with_signal(JNIEnv *env, jclass klass,
     do {
         sigset_t mask;
         sigset_t old;
-        // 这里需要stack_t，临时的栈，因为SIGSEGV时，当前栈空间已经是处于进程所能控制的栈中，此时就不能在这个栈里面操作，否则就会异常循环
+        // 这里需要stack_t，临时的备用信号栈，因为SIGSEGV时，当前栈空间已经是处于进程所能控制的栈中，此时就不能在这个栈里面操作，否则就会异常循环
         stack_t ss;
         if (NULL == (ss.ss_sp = calloc(1, SIGNAL_CRASH_STACK_SIZE))) {
             handle_exception(env);
@@ -36,6 +36,7 @@ void init_with_signal(JNIEnv *env, jclass klass,
         }
         ss.ss_size = SIGNAL_CRASH_STACK_SIZE;
         ss.ss_flags = 0;
+        // 调用 sigaltstack(&ss, NULL) 将备用信号栈设置为 ss
         if (0 != sigaltstack(&ss, NULL)) {
             handle_exception(env);
             break;
@@ -55,6 +56,7 @@ void init_with_signal(JNIEnv *env, jclass klass,
         sigc.sa_sigaction = handler;
         // 信号处理时，先阻塞所有的其他信号，避免干扰正常的信号处理程序
         sigfillset(&sigc.sa_mask);
+        // 将 SA_SIGINFO、SA_ONSTACK 和 SA_RESTART 标志赋值给 sigc.sa_flags，表示在处理信号时，使用扩展的信号信息、使用备用信号栈，并允许系统在信号处理函数返回后重新启动系统调用。
         sigc.sa_flags = SA_SIGINFO | SA_ONSTACK |SA_RESTART;
 
 
