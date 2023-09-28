@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.Button
 import android.widget.TextView
+import com.pika.lib_signal.SignalController
 
 class MainActivity : AppCompatActivity() {
     companion object{
@@ -37,6 +38,12 @@ class MainActivity : AppCompatActivity() {
             // 这里只是一个死循环，需要触发尽快anr可以直接点击返回健
             createANR(text2)
         }
+
+        val crashHook = this.findViewById<Button>(R.id.crashHook)
+        crashHook.setOnClickListener {
+            SignalController.crash()
+        }
+
     }
 
     private external fun throwNativeCrash()

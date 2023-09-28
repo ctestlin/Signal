@@ -63,6 +63,10 @@ object SignalController {
     @JvmStatic
     private external fun initWithSignals(signals: IntArray)
 
+    @JvmStatic
+    external fun crash()
+
+
 
 
 }

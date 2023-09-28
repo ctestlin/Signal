@@ -12,6 +12,7 @@
 #include "unwind-utils.h"
 #include <string.h>
 #include <string>
+#include <setjmp.h>
 
 #define JNI_CLASS_NAME "com/pika/lib_signal/SignalController"
 
@@ -65,9 +66,49 @@ static void* invoke_crash(void *arg){
     return NULL;
 
 }
+static sigjmp_buf sigsegv_env;
+static sig_atomic_t flag =0;
+
+
+void create_crash(){
+    raise(SIGSEGV);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_pika_lib_1signal_SignalController_crash(JNIEnv *env, jclass clazz) {
+    flag = 1;
+    if(sigsetjmp(sigsegv_env, 1))
+    {
+        __android_log_print(ANDROID_LOG_INFO, "hello", "%s", "crash 了，但被我抓住了");
+    }else{
+        create_crash();
+        __android_log_print(ANDROID_LOG_INFO, "hello", "%s", "SIGSEGV");
+    }
+}
+
+
+static void sigsegv_handler(int sig) {
+    if(flag){
+        siglongjmp(sigsegv_env, 1);
+    }
+
+}
+
 
 extern "C"
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+
+    /////////// 演示catch nativeCrash
+    struct sigaction sigc;
+    sigc.sa_handler = sigsegv_handler;
+    sigemptyset(&sigc.sa_mask);
+    sigc.sa_flags = SA_SIGINFO;
+    sigaction(SIGSEGV, &sigc, nullptr);
+
+
+
+    ////// 原有逻辑
     JNIEnv *env;
     javaVm = vm;
     jclass cls;
